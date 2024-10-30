@@ -1,34 +1,47 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import useFontRenderer from './hooks/useFontRenderer'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [text, setText] = useState('Hello, Suxiong!')
+  const [fontFile, setFontFile] = useState<File | null>(null)
+
+  const svgPaths = useFontRenderer({ fontFile, text })
+
+  const handleFontUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    console.log('file', file)
+
+    setFontFile(file || null)
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="font-renderer-container">
+      <div className="controls">
+        <input
+          type="file"
+          accept=".ttf,.otf"
+          onChange={handleFontUpload}
+        />
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <svg width="500" height="200">
+        {svgPaths.map((path, index) => (
+          path && (
+            <path
+              key={`${index}-${fontFile?.name}`}
+              d={path.getAttribute('d') ?? ''}
+              className={`path-${index}`}
+              style={{ animation: `draw 10s ease forwards ${index * 1}s` }}
+            />
+          )
+        ))}
+      </svg>
+    </div>
   )
 }
 
