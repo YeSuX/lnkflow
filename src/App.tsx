@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import useFontRenderer from './hooks/useFontRenderer'
+import useExportSVG from './hooks/useExportSVG'
 import './App.css'
 
 function App() {
@@ -7,6 +8,9 @@ function App() {
   const [fontFile, setFontFile] = useState<File | null>(null)
 
   const svgPaths = useFontRenderer({ fontFile, text })
+  console.log('svgPaths', svgPaths)
+
+  const exportSVG = useExportSVG(svgPaths);
 
   const handleFontUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -28,6 +32,7 @@ function App() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
+        <button onClick={exportSVG}>导出SVG</button>
       </div>
       <svg width="500" height="200">
         {svgPaths.map((path, index) => (
